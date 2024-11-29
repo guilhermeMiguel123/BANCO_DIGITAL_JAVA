@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./output.css" rel="stylesheet">
+  <title>Projeto Faculdade</title>
+</head>
+<body class="bg-neutral-800 p-2 text-gray-200 space-y-4">
+  <div class="w-full text-center">
+    <h1 class="font-bold text-4xl">
+      Projeto de programação orientada a objetos
+    </h1>
+  </div>
+  <div class="space-y-4">
+    <form id="accountForm" class="space-y-4 p-4 rounded-2xl bg-neutral-600 flex flex-col items-center">
+      <div class="space-y-4">
+        <div class="flex flex-col max-w-[300px]">
+          <label for="createConta" class="cursor-pointer">
+            Crie uma conta no banco
+          </label>
+          <input
+            type="text"
+            id="createConta"
+            placeholder="Digite aqui..."
+            minlength="3"
+            maxlength="10"
+            required
+            class="rounded-lg outline-none text-gray-800 px-4 py-1"
+          />
+        </div>
+        <div class="flex flex-col max-w-[300px]">
+          <label for="initSaldo" class="cursor-pointer">
+            Adicione um saldo inicial para a conta
+          </label>
+          <input
+            type="number"
+            id="initSaldo"
+            placeholder="Digite aqui..."
+            minlength="1"
+            min="10"
+            max="1000"
+            required
+            class="rounded-lg outline-none text-gray-800 px-4 py-1"
+          />
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="font-semibold bg-neutral-800 rounded-2xl px-6 py-3 hover:bg-neutral-800/70 active:bg-neutral-800 duration-300">
+          Cadastrar conta
+        </button>
+      </div>
+    </form>
+    <div class="space-y-4 p-4 rounded-2xl bg-neutral-600 flex flex-col items-center">
+      <button type="button" class="text-2xl font-semibold bg-neutral-800 rounded-2xl px-6 py-3 hover:bg-neutral-800/70 active:bg-neutral-800 duration-300">
+        Listar todas as contas
+      </button>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
