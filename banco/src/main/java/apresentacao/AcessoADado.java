@@ -1,12 +1,11 @@
 package apresentacao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Properties;
+import java.util.*;
+import java.sql.*;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AcessoADado {
   public AcessoADado() {
     // Construtor vazio para inicialização
@@ -20,7 +19,7 @@ public class AcessoADado {
   */
 
   public Connection connect() throws SQLException {
-    String url = "jdbc:postgresql://localhost/banco"; // Atualize para seu banco
+    String url = "jdbc:postgresql://localhost/banco";
     Properties props = new Properties();
     props.setProperty("user", "postgres");
     props.setProperty("password", "tone123TONE");
@@ -93,20 +92,24 @@ public class AcessoADado {
    /**
     * Lista todas as contas de banco de dados.
     */
-    public void listarContas() {
+    public List<Map<String, Object>> listarContas() {
       String SQL = "SELECT numero, saldo FROM public.conta";
+      List<Map<String, Object>> contas = new ArrayList<>();
 
       try(Connection conn = connect();
           PreparedStatement pstmt = conn.prepareStatement(SQL);
           ResultSet rs = pstmt.executeQuery()) {
             while(rs.next()) {
-              String numero = rs.getString("numero");
-              float saldo = rs.getFloat("saldo");
-              System.out.println("Conta: " + numero + " | Saldo: " + saldo);
+              Map<String, Object> conta = new HashMap<>();
+              conta.put("numero", rs.getString("numero"));
+              conta.put("saldo", rs.getFloat("saldo"));
+              contas.add(conta);
             }
       } catch(SQLException ex) {
         System.out.println("Erro de SQL: " + ex.getMessage());
       }
+
+      return contas;
     }
 
     /**
@@ -135,24 +138,5 @@ public class AcessoADado {
       }
 
       return mensagem;
-    }
-
-    public static void main(String[] args) {
-      AcessoADado acesso = new AcessoADado();
-
-      System.out.println(acesso.cadastrarConta("12345", 1000.0f));
-      System.out.println(acesso.alterarConta("12345", 1500.0f));
-      acesso.listarContas();
-      // System.out.println(acesso.excluirConta("12345"));
-
-      try (Connection conn = acesso.connect()) {
-          if (conn != null) {
-              System.out.println("Conexão bem-sucedida com o banco de dados!");
-          } else {
-              System.out.println("Falha ao conectar com o banco de dados.");
-          }
-      } catch (SQLException e) {
-          e.printStackTrace();
-      }
     }
 }
