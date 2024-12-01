@@ -2,7 +2,7 @@
 
 #### Desafio: Implementar um banco de dados PostgreSQL ao back-end e criar um front-end e conectar ao back
 
-#### Instruções de como utilizar esse projeto
+#### Instruções de como utilizar esse projeto no VSCode
 
 - Faz o clone do repositório
 - Na pasta *banco* utiliza o comando `mvn install` para instalar as dependências do back-end
