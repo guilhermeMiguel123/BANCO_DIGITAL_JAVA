@@ -132,4 +132,55 @@ public class AcessoADado {
 
       return mensagem;
     }
+
+    /**
+     * Transfere saldo em uma conta para outra.
+     * 
+     * @param numeroOrigem número da conta de origim
+     * @param numeroDestino número da conta de destino
+     * @param valor valor a ser transferido
+     * @return mensagem de sucesso ou erro
+     */
+    public String transferirSaldo(String numeroOrigem, String numeroDestino, float valor) {
+      String debitarSQL = "UPDATE public.conta SET saldo = saldo - ? WHERE numero = ?";
+      String creditarSQL = "UPDATE public.conta SET saldo = saldo + ? WHERE numero = ?";
+      String mensagem;
+
+      try(Connection conn = connect()) {
+        conn.setAutoCommit(false); // Inicia a transação
+
+        try (
+          PreparedStatement debitarStmt = conn.prepareStatement(debitarSQL);
+          PreparedStatement creditarStmt = conn.prepareStatement(creditarSQL);
+        ) {
+          // Debita o valor da conta de origem
+          debitarStmt.setFloat(1, valor);
+          debitarStmt.setString(2, numeroOrigem);
+          int debitoAfetado = debitarStmt.executeUpdate();
+
+          if(debitoAfetado == 0) {
+            throw new SQLException("Conta de origem não encontrada ou saldo insuficiente");
+          }
+
+          // credita o valor na conta de destino
+          creditarStmt.setFloat(1, valor);
+          creditarStmt.setString(2, numeroDestino);
+          int creditoAfetado = creditarStmt.executeUpdate();
+
+          if(creditoAfetado == 0) {
+            throw new SQLException("Conta de destino não encontrada");
+          }
+
+          conn.commit(); // confirma a transação
+          mensagem = "Transferência de R$" + valor + " de " + numeroOrigem + " para " + numeroDestino + " realizada com sucesso.";
+        } catch(SQLException ex) {
+          conn.rollback(); // Reverte a transação em caso de erro
+          mensagem = "Erro durante a transferência: " + ex.getMessage();
+        }
+      } catch(SQLException ex) {
+        mensagem = "Erro de conexão ou SQL: " + ex.getMessage();
+      }
+
+      return mensagem;
+    }
 }

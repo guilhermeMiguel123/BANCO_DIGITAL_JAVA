@@ -2,10 +2,12 @@
 const showCreateFormButton = document.getElementById("showCreateForm");
 const showAlterFormButton = document.getElementById("showAlterForm");
 const showDeleteFormButton = document.getElementById("showDeleteForm");
+const showTransferFormButton = document.getElementById("showTransferForm");
 
 const createContainer = document.getElementById("createContainer");
 const alterContainer = document.getElementById("alterContainer");
 const deleteContainer = document.getElementById("deleteContainer");
+const transferContainer = document.getElementById("transferContainer");
 
 const listButton = document.getElementById("listAccounts");
 const accountList = document.getElementById("accountList");
@@ -17,6 +19,7 @@ const hideAllContainers = () => {
   createContainer.classList.add("hidden");
   alterContainer.classList.add("hidden");
   deleteContainer.classList.add("hidden");
+  transferContainer.classList.add("hidden");
 };
 
 // Alternar para o formulário de criar conta
@@ -36,6 +39,11 @@ showDeleteFormButton.addEventListener("click", () => {
   hideAllContainers();
   deleteContainer.classList.remove("hidden");
 });
+
+showTransferFormButton.addEventListener("click", () => {
+  hideAllContainers();
+  transferContainer.classList.remove("hidden");
+})
 
 // Função para listar contas
 const listarContas = async () => {
@@ -136,6 +144,34 @@ const excluirConta = async (numero) => {
   }
 };
 
+// Função para transferir entre contas
+const transferirEntreContas = async (sourceAccount, targetAccount, amount) => {
+  try {
+    const response = await fetch(`${baseURL}/transferencia`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        numeroOrigem: sourceAccount,
+        numeroDestino: targetAccount,
+        valor: amount
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.statusText}`);
+    }
+
+    const data = await response.text();
+    console.log(data);
+    return true;
+  } catch (err) {
+    console.error("Erro na transferência", err);
+    return false;
+  }
+}
+
 // Evento para listar contas
 listButton.addEventListener("click", listarContas);
 
@@ -186,5 +222,23 @@ deleteContainer.querySelector("form").addEventListener("submit", async (event) =
     listarContas();
   } else {
     alert("Erro ao excluir conta. Tente novamente.");
+  }
+});
+
+// Evento de submissão do formulário de transferência
+transferContainer.querySelector("form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const sourceAccount = document.getElementById("sourceAccount").value;
+  const targetAccount = document.getElementById("targetAccount").value;
+  const transferAmount = document.getElementById("transferAmount").value;
+
+  const response = await transferirEntreContas(sourceAccount, targetAccount, transferAmount);
+
+  if (response) {
+    alert(`Transferência de R$${transferAmount} de ${sourceAccount} para ${targetAccount} realizada com sucesso.`);
+    listarContas(); // Atualizar a lista de contas
+  } else {
+    alert("Erro ao realizar a transferência. Tente novamente.");
   }
 });

@@ -25,6 +25,9 @@
         <li class="p-4">
           <button type="button" id="showDeleteForm">Excluir Conta</button>
         </li>
+        <li class="p-4">
+          <button type="button" id="showTransferForm">Transferência</button>
+        </li>
       </ul>
     
       <!-- Formulário de Criar Conta -->
@@ -92,7 +95,49 @@
           </div>
         </form>
       </div>
-    
+
+      <!-- Formulário de Transferência -->
+      <div id="transferContainer" class="hidden">
+        <form id="transferForm" class="space-y-4 p-4 rounded-2xl bg-neutral-600 flex flex-col items-center">
+          <div class="flex flex-col max-w-[300px]">
+            <label for="sourceAccount" class="cursor-pointer">Número da conta de origem</label>
+            <input
+              type="text"
+              id="sourceAccount"
+              placeholder="Conta de origem..."
+              required
+              class="rounded-lg outline-none text-gray-800 px-4 py-1"
+            />
+          </div>
+          <div class="flex flex-col max-w-[300px]">
+            <label for="targetAccount" class="cursor-pointer">Número da conta de destino</label>
+            <input
+              type="text"
+              id="targetAccount"
+              placeholder="Conta de destino..."
+              required
+              class="rounded-lg outline-none text-gray-800 px-4 py-1"
+            />
+          </div>
+          <div class="flex flex-col max-w-[300px]">
+            <label for="transferAmount" class="cursor-pointer">Valor a transferir</label>
+            <input
+              type="number"
+              id="transferAmount"
+              placeholder="Digite o valor..."
+              min="1"
+              required
+              class="rounded-lg outline-none text-gray-800 px-4 py-1"
+            />
+          </div>
+          <div>
+            <button type="submit" class="font-semibold bg-neutral-800 rounded-2xl px-6 py-3 hover:bg-neutral-800/70 active:bg-neutral-800 duration-300">
+              Transferir
+            </button>
+          </div>
+        </form>
+      </div>
+
       <!-- Formulário de Excluir Conta -->
       <div id="deleteContainer" class="hidden">
         <form id="deleteForm" class="space-y-4 p-4 rounded-2xl bg-neutral-600 flex flex-col items-center">
