@@ -1,18 +1,48 @@
-const form = document.getElementById("accountForm");
+// Selecionando os botões e contêineres
+const showCreateFormButton = document.getElementById("showCreateForm");
+const showAlterFormButton = document.getElementById("showAlterForm");
+const showDeleteFormButton = document.getElementById("showDeleteForm");
+
+const createContainer = document.getElementById("createContainer");
+const alterContainer = document.getElementById("alterContainer");
+const deleteContainer = document.getElementById("deleteContainer");
+
 const listButton = document.getElementById("listAccounts");
 const accountList = document.getElementById("accountList");
 
-// Chamadas HTTP para o backend banco
+const baseURL = "http://localhost:8080/api/contas"; // Base URL do backend
 
-const baseURL = "http://localhost:8080/api/contas";
+// Função para ocultar todos os contêineres
+const hideAllContainers = () => {
+  createContainer.classList.add("hidden");
+  alterContainer.classList.add("hidden");
+  deleteContainer.classList.add("hidden");
+};
 
+// Alternar para o formulário de criar conta
+showCreateFormButton.addEventListener("click", () => {
+  hideAllContainers();
+  createContainer.classList.remove("hidden");
+});
+
+// Alternar para o formulário de alterar conta
+showAlterFormButton.addEventListener("click", () => {
+  hideAllContainers();
+  alterContainer.classList.remove("hidden");
+});
+
+// Alternar para o formulário de excluir conta
+showDeleteFormButton.addEventListener("click", () => {
+  hideAllContainers();
+  deleteContainer.classList.remove("hidden");
+});
+
+// Função para listar contas
 const listarContas = async () => {
   try {
-    const response = await fetch(baseURL, {
-      method: "GET"
-    });
+    const response = await fetch(baseURL, { method: "GET" });
 
-    if(!response.ok) {
+    if (!response.ok) {
       throw new Error(`Erro na requisição: ${response.statusText}`);
     }
 
@@ -20,12 +50,12 @@ const listarContas = async () => {
 
     accountList.innerHTML = "";
 
-    if(contas.length == 0) {
+    if (contas.length === 0) {
       accountList.innerHTML = "<p>Nenhuma conta encontrada.</p>";
       return;
     }
 
-    contas.forEach(conta => {
+    contas.forEach((conta) => {
       const contaElement = document.createElement("div");
       contaElement.classList.add("p-2", "rounded-lg", "bg-neutral-700", "mb-2");
       contaElement.innerHTML = `
@@ -34,54 +64,127 @@ const listarContas = async () => {
       `;
       accountList.appendChild(contaElement);
     });
-  } catch(err) {
-    console.error("Erro ao listarcontas", err);
+  } catch (err) {
+    console.error("Erro ao listar contas", err);
     accountList.innerHTML = "<p>Erro ao carregar as contas. Tente novamente mais tarde.</p>";
   }
-}
+};
 
+// Função para cadastrar conta
 const cadastrarConta = async (numero, saldo) => {
   try {
     const response = await fetch(baseURL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ numero, saldo })
+      body: new URLSearchParams({ numero, saldo }),
     });
 
-    if(!response.ok) {
+    if (!response.ok) {
       throw new Error(`Erro na requisição: ${response.statusText}`);
     }
 
-    const data = await response.text(); 
+    const data = await response.text();
     console.log(data);
     return true;
-  } catch(err) {
+  } catch (err) {
     console.error("Erro ao cadastrar conta", err);
     return false;
   }
-}
+};
 
-// Eventos
+// Função para alterar conta
+const alterarConta = async (numero, saldo) => {
+  try {
+    const response = await fetch(baseURL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ numero, saldo }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.statusText}`);
+    }
+
+    const data = await response.text();
+    console.log(data);
+    return true;
+  } catch (err) {
+    console.error("Erro ao alterar conta", err);
+    return false;
+  }
+};
+
+// Função para excluir conta
+const excluirConta = async (numero) => {
+  try {
+    const response = await fetch(`${baseURL}?numero=${numero}`, { method: "DELETE" });
+
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.statusText}`);
+    }
+
+    const data = await response.text();
+    console.log(data);
+    return true;
+  } catch (err) {
+    console.error("Erro ao excluir conta", err);
+    return false;
+  }
+};
+
+// Evento para listar contas
 listButton.addEventListener("click", listarContas);
 
-form.addEventListener('submit', function(event) {
-  event.preventDefault(); // Evita o envio padrão do formulário
+// Evento para criar conta
+createContainer.querySelector("form").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-  // Captura os valores dos inputs
-  const createConta = document.getElementById('createConta').value;
-  const initSaldo = document.getElementById('initSaldo').value;
+  const createConta = document.getElementById("createConta").value;
+  const initSaldo = document.getElementById("initSaldo").value;
 
-  const response = cadastrarConta(createConta, initSaldo);
+  const response = await cadastrarConta(createConta, initSaldo);
 
-  if(response) {
-    alert(`Conta criada!\n\nNome: ${createConta}\nSaldo Inicial: ${initSaldo}`);
+  if (response) {
+    alert(`Conta criada com sucesso!\nNúmero: ${createConta}\nSaldo: ${initSaldo}`);
     listarContas();
   } else {
-    alert("Algo deu errado tente novamente mais tarde");
+    alert("Erro ao criar conta. Tente novamente.");
   }
-  
 });
 
+// Evento para alterar conta
+alterContainer.querySelector("form").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
+  const alterConta = document.getElementById("alterConta").value;
+  const newSaldo = document.getElementById("newSaldo").value;
+
+  const response = await alterarConta(alterConta, newSaldo);
+
+  if (response) {
+    alert(`Conta alterada com sucesso!\nNúmero: ${alterConta}\nNovo Saldo: ${newSaldo}`);
+    listarContas();
+  } else {
+    alert("Erro ao alterar conta. Tente novamente.");
+  }
+});
+
+// Evento para excluir conta
+deleteContainer.querySelector("form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const deleteConta = document.getElementById("deleteConta").value;
+
+  const response = await excluirConta(deleteConta);
+
+  if (response) {
+    alert(`Conta ${deleteConta} excluída com sucesso!`);
+    listarContas();
+  } else {
+    alert("Erro ao excluir conta. Tente novamente.");
+  }
+});
