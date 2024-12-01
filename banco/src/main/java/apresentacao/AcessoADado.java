@@ -1,31 +1,24 @@
 package apresentacao;
 
 import java.util.*;
+
+import javax.sql.*;
+
 import java.sql.*;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class AcessoADado {
-  public AcessoADado() {
-    // Construtor vazio para inicialização
+
+  private final DataSource dataSource;
+
+  public AcessoADado(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
-  /** 
-   * Conecta ao banco de dados PostgreSQL.
-   * 
-   * @return um objeto Connection
-   * @throws SQLException se ocorrer algum erro de conexão
-  */
-
   public Connection connect() throws SQLException {
-    String url = "jdbc:postgresql://localhost/banco";
-    Properties props = new Properties();
-    props.setProperty("user", "postgres");
-    props.setProperty("password", "tone123TONE");
-    props.setProperty("ssl", "false");
-
-    return DriverManager.getConnection(url, props);
+    return dataSource.getConnection();
   }
 
   /**
